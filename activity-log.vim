@@ -93,7 +93,7 @@ endfunction
 function s:WriteLogAction(message)
 	let l:path = s:LogLocation . strftime('%Y/%m')
 	:silent exe '! mkdir -p ' l:path
-	:silent exe '! echo "' . a:message . '" >> ' . l:path . '/' . strftime('%d') . '.log'
+	:silent exe '! echo ' . shellescape(a:message) . ' >> ' . l:path . '/' . strftime('%d') . '.log'
 endfunction
 
 " Section: Plugin completion
