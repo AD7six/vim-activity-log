@@ -3,7 +3,7 @@
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
 " Authors:      Andy Dawson <andydawson76 AT gmail DOT com>
-" Version:      1.0.0
+" Version:      1.1.0
 " Licence:      http://www.opensource.org/licenses/mit-license.php
 "               The MIT License
 " URL:          http://github.com/AD7six/vim-activity-log
@@ -15,7 +15,7 @@
 " The vim activity log plugin does one thing. it logs when you create, open or
 " write a file. This provides you with a detailed log of what you've been up to.
 " The activity log files are stored in the ~/activity/ directory by default (
-" edit the s:LogActivity variable in this script) and are named as follows:
+" edit the s:LogLocation variable in this script) and are named as follows:
 " YYYY/MM/DD.log
 "
 " The files are formatted in the following format:
@@ -37,35 +37,63 @@ let loaded_activity_log=1
 " Section: Event group setup
 " Log creating, opening and writing files
 augroup ActivityLog
-	au BufNewFile * call s:LogActivity('create')
-	au BufReadPost * call s:LogActivity('open')
+	au BufNewFile * call s:LogAction('create')
+	au BufReadPost * call s:LogAction('open')
 
-	au BufWritePost * call s:LogActivity('write')
+	au BufWritePost * call s:LogAction('write')
 augroup END
 
 " Section: Script variables
 
 " Where to store activity. setting to '' disables the log
-let s:LogActivity = '~/activity/'
+let s:LogLocation = '~/activity/'
+let s:UnsavedStack = {}
 
 " Section: Utility functions
 " These functions are not/should not be directly accessible
 
-" Function: LogActivity()
-" Log doing something
-function s:LogActivity(action)
-	if s:LogActivity == ''
+" Function: LogAction()
+"
+" Log doing something. If the action is not 'write' it is saved without
+" writing to the activity log. If the file is closed before writing no action
+" is taken. Otherwise, when the file is written the saved entry of
+" opening/creating the file is also added to the activity log
+function s:LogAction(action)
+	if s:LogLocation == ''
 		return
 	endif
 
-	let l:path = s:LogActivity . strftime('%Y/%m')
+	let l:file = expand("%:p")
+	let l:time = strftime('%F %T')
 
+	if a:action != "write"
+		if !has_key(s:UnsavedStack, l:file)
+			let s:UnsavedStack[l:file] = {}
+		endif
+		let s:UnsavedStack[l:file][a:action] = l:time
+		return
+	endif
+
+	if len(s:UnsavedStack) && has_key(s:UnsavedStack, l:file)
+		for [key, value] in items(s:UnsavedStack[l:file])
+			let l:message = value . ' ' . key  . ' ' . l:file
+			call s:WriteLogAction(l:message)
+		endfor
+		let s:UnsavedStack[l:file] = {}
+	endif
+
+	let l:message = l:time . ' ' . a:action  . ' ' . l:file
+	call s:WriteLogAction(l:message)
+endfunction
+
+" Function: WriteLogAction()
+"
+" Simple wrapper for appending a message to the correct log file
+" Also created any missing directories as required
+function s:WriteLogAction(message)
+	let l:path = s:LogLocation . strftime('%Y/%m')
 	:silent exe '! mkdir -p ' l:path
-
-	let l:cmd = '!echo "' . strftime('%F %T') 
-	let l:cmd = l:cmd . ' ' . a:action
-	let l:cmd = l:cmd . ' ' . expand("%:p") . '"'
-	:silent exe l:cmd . ' >> ' . l:path . '/' . strftime('%d') . '.log'
+	:silent exe '! echo "' . a:message . '" >> ' . l:path . '/' . strftime('%d') . '.log'
 endfunction
 
 " Section: Plugin completion

@@ -20,3 +20,4 @@ The format for entries in the log files is:
 # Changelog
 
 1.0.0 Intial release
+1.1.0 Only write create/open entries if the file is edited
