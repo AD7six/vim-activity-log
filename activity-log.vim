@@ -3,7 +3,7 @@
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
 " Authors:      Andy Dawson <andydawson76 AT gmail DOT com>
-" Version:      1.2.0
+" Version:      1.2.1
 " Licence:      http://www.opensource.org/licenses/mit-license.php
 "               The MIT License
 " URL:          http://github.com/AD7six/vim-activity-log
@@ -92,8 +92,8 @@ function s:LogAction(action)
 	let l:message = l:time . ';' . a:action  . ';' . l:file
 
 	if s:LogGitBranch
-		let l:branch = system('cd ' . expand("%:h") . '; git branch')
-		if (l:branch =~ '^\* ')
+		let l:branch = system('cd ' . expand("%:h") . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
+		if (l:branch =~ "^* ")
 			let l:message = l:message . ';' . substitute(l:branch, '\* ', '', '')
 		endif
 	endif

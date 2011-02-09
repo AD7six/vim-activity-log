@@ -24,3 +24,4 @@ The git-branch is only added if a branch can be determined.
 * 1.0.0 Intial release
 * 1.1.0 Only write create/open entries if the file is edited
 * 1.2.0 Append current git branch, changed delimiter from space to semi-colon
+* 1.2.1 Correct git branch parsing
