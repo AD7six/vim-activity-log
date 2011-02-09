@@ -15,9 +15,12 @@ The plugin is automatic, and will create log files of your vim actions in: `~/ac
 
 The format for entries in the log files is:
 
-	Y-m-d H:i:s action /full/path/to/file
+	Y-m-d H:i:s;action;/full/path/to/file;git-branch
+
+The git-branch is only added if a branch can be determined.
 
 # Changelog
 
 * 1.0.0 Intial release
 * 1.1.0 Only write create/open entries if the file is edited
+* 1.2.0 Append current git branch, changed delimiter from space to semi-colon

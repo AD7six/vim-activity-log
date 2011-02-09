@@ -3,7 +3,7 @@
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
 " Authors:      Andy Dawson <andydawson76 AT gmail DOT com>
-" Version:      1.1.0
+" Version:      1.2.0
 " Licence:      http://www.opensource.org/licenses/mit-license.php
 "               The MIT License
 " URL:          http://github.com/AD7six/vim-activity-log
@@ -20,7 +20,7 @@
 "
 " The files are formatted in the following format:
 "
-" YYYY-MM-DD HH:MM:SS <action> /full/path/to/file
+" YYYY-MM-DD HH:MM:SS;<action>;/full/path/to/file;git-branch
 "
 " The full date is included to allow concatenation and easier analysis
 
@@ -45,8 +45,13 @@ augroup END
 
 " Section: Script variables
 
-" Where to store activity. setting to '' disables the log
+" Where to store activity. setting to '' disables the log, effectively
+" disabling the plugin
 let s:LogLocation = '~/activity/'
+" append the current git branch to log?
+let s:LogGitBranch = 1
+" stack of unsaved log entries. Used to log open and create entries for
+" delayed inserting into the log upon write
 let s:UnsavedStack = {}
 
 " Section: Utility functions
@@ -57,7 +62,9 @@ let s:UnsavedStack = {}
 " Log doing something. If the action is not 'write' it is saved without
 " writing to the activity log. If the file is closed before writing no action
 " is taken. Otherwise, when the file is written the saved entry of
-" opening/creating the file is also added to the activity log
+" opening/creating the file is also added to the activity log.
+" If s:LogGitBranch is true, the git branch at the time of writing is appended
+" to the log entry
 function s:LogAction(action)
 	if s:LogLocation == ''
 		return
@@ -82,7 +89,14 @@ function s:LogAction(action)
 		let s:UnsavedStack[l:file] = {}
 	endif
 
-	let l:message = l:time . ' ' . a:action  . ' ' . l:file
+	let l:message = l:time . ';' . a:action  . ';' . l:file
+
+	if s:LogGitBranch
+		let l:branch = system('cd ' . expand("%:h") . '; git branch')
+		if (l:branch =~ '^\* ')
+			let l:message = l:message . ';' . substitute(l:branch, '\* ', '', '')
+		endif
+	endif
 	call s:WriteLogAction(l:message)
 endfunction
 
