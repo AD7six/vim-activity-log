@@ -7,7 +7,7 @@ This vim plugin is used to keep track of what and when you do things.
 
 	cd ~
 	git clone git://github.com/AD7six/vim-activity-log.git
-	ln -s vim-activity-log/activity-log.vim ~/.vim/plugins/
+	ln -s vim-activity-log/plugin/activity-log.vim ~/.vim/plugin/
 
 # Usage
 
