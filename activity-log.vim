@@ -29,10 +29,10 @@
 " loaded_activity_log is set to 1 when initialization begins, and 2 when it
 " completes.
 
-if exists('loaded_activity_log')
+if exists('g:loaded_activity_log')
 	finish
 endif
-let loaded_activity_log=1
+let g:loaded_activity_log=1
 
 " Section: Event group setup
 " Log creating, opening and writing files
@@ -47,9 +47,13 @@ augroup END
 
 " Where to store activity. setting to '' disables the log, effectively
 " disabling the plugin
-let s:LogLocation = '~/activity/'
+if !exists('g:activity_log_location')
+	let g:activity_log_location = '~/activity/%Y/%m/%d.log'
+endif
 " append the current git branch to log?
-let s:LogGitBranch = 1
+if !exists('g:activity_log_append_git_branch')
+	let g:activity_log_append_git_branch = 1
+endif
 " stack of unsaved log entries. Used to log open and create entries for
 " delayed inserting into the log upon write
 let s:UnsavedStack = {}
@@ -66,7 +70,7 @@ let s:UnsavedStack = {}
 " If s:LogGitBranch is true, the git branch at the time of writing is appended
 " to the log entry
 function s:LogAction(action)
-	if s:LogLocation == ''
+	if g:activity_log_location == ''
 		return
 	endif
 
@@ -91,7 +95,7 @@ function s:LogAction(action)
 
 	let l:message = l:time . ';' . a:action  . ';' . l:file
 
-	if s:LogGitBranch
+	if g:activity_log_append_git_branch
 		let l:branch = system('cd ' . expand("%:h") . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
 		if (l:branch =~ "^* ")
 			let l:message = l:message . ';' . substitute(l:branch, '\* ', '', '')
@@ -105,10 +109,10 @@ endfunction
 " Simple wrapper for appending a message to the correct log file
 " Also created any missing directories as required
 function s:WriteLogAction(message)
-	let l:path = s:LogLocation . strftime('%Y/%m')
-	:silent exe '! mkdir -p ' l:path
-	:silent exe '! echo ' . shellescape(a:message) . ' >> ' . l:path . '/' . strftime('%d') . '.log'
+	let l:path = strftime(g:activity_log_location)
+	:silent exe '! mkdir -p ' substitute(l:path, '\/[^\/]*$', '', '')
+	:silent exe '! echo ' . shellescape(a:message) . ' >> ' . l:path
 endfunction
 
 " Section: Plugin completion
-let loaded_activity_log=2
+let g:loaded_activity_log=2
