@@ -12,11 +12,13 @@
 "
 " Section: Documentation
 "
-" The vim activity log plugin does one thing. it logs when you create, open or
-" write a file. This provides you with a detailed log of what you've been up to.
-" The activity log files are stored in the ~/activity/ directory by default (
-" edit the s:LogLocation variable in this script) and are named as follows:
-" YYYY/MM/DD.log
+" The vim activity log plugin logs when you create, open or write a file. 
+"
+" This provides you with a detailed log of what you've been up to. By default
+" the activity log files are stored in the ~/activity/ directory and are named
+" as follows: YYYY/MM/DD.log
+" You can change the log file locations by defining g:activity_log_location
+" to a pattern to suit your needs. The pattern is passed to strftime
 "
 " The files are formatted in the following format:
 "
@@ -107,7 +109,7 @@ endfunction
 " Function: WriteLogAction()
 "
 " Simple wrapper for appending a message to the correct log file
-" Also created any missing directories as required
+" Also creates any missing directories as required
 function s:WriteLogAction(message)
 	let l:path = strftime(g:activity_log_location)
 	:silent exe '! mkdir -p ' substitute(l:path, '\/[^\/]*$', '', '')

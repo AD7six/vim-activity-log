@@ -12,6 +12,8 @@ This vim plugin is used to keep track of what and when you do things.
 # Usage
 
 The plugin is automatic, and will create log files of your vim actions in: `~/activity/YYYY/MM/DD.log`
+If you prefer a different location for your logs - you can define `g:activity_log_location` in your
+.vimrc file
 
 The format for entries in the log files is:
 
