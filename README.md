@@ -25,3 +25,5 @@ The git-branch is only added if a branch can be determined.
 * 1.1.0 Only write create/open entries if the file is edited
 * 1.2.0 Append current git branch, changed delimiter from space to semi-colon
 * 1.2.1 Correct git branch parsing
+* 1.3.0 Restructure parameters, use a pattern not a fixed file location, allow setting from outside
+	the plugin

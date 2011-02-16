@@ -3,7 +3,7 @@
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
 " Authors:      Andy Dawson <andydawson76 AT gmail DOT com>
-" Version:      1.2.1
+" Version:      1.3.0
 " Licence:      http://www.opensource.org/licenses/mit-license.php
 "               The MIT License
 " URL:          http://github.com/AD7six/vim-activity-log
