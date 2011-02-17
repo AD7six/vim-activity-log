@@ -77,6 +77,9 @@ function s:LogAction(action)
 	endif
 
 	let l:file = expand("%:p")
+	if empty(l:file)
+		return
+	endif
 	let l:time = strftime('%F %T')
 
 	if a:action != "write"
