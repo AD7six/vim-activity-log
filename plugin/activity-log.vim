@@ -76,7 +76,7 @@ function s:LogAction(action)
 		return
 	endif
 
-	let l:file = expand("%:p")
+	let l:file = fnameescape(expand("%:p"))
 	if empty(l:file)
 		return
 	endif
@@ -101,7 +101,7 @@ function s:LogAction(action)
 	let l:message = l:time . ';' . a:action  . ';' . l:file
 
 	if g:activity_log_append_git_branch
-		let l:branch = system('cd ' . expand("%:h") . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
+		let l:branch = system('cd ' . fnameescape(expand("%:h")) . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
 		if (l:branch =~ "^* ")
 			let l:message = l:message . ';' . substitute(l:branch, '\* ', '', '')
 		endif
