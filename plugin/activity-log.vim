@@ -3,6 +3,7 @@
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
 " Authors:      Andy Dawson <andydawson76 AT gmail DOT com>
+"               Sofia Cardita <sofiacardita AT gmail DOT com>
 " Version:      1.3.0
 " Licence:      http://www.opensource.org/licenses/mit-license.php
 "               The MIT License
@@ -23,6 +24,16 @@
 " The files are formatted in the following format:
 "
 " YYYY-MM-DD HH:MM:SS;<action>;/full/path/to/file;git-branch
+" 
+" Calling <leader>s (start_task), <leader>i (interval_task), 
+" <leader>c (continue_task), <leader>e (end_task) writes 
+" the current line to the log file as the last item
+" resulting in a line as such
+"
+" YYYY-MM-DD HH:MM:SS;<action>_task;/full/path/to/file;git-branch;<current line 
+" text>
+"
+" This allows for finer-grained statistics data for time-tracking reports.
 "
 " The full date is included to allow concatenation and easier analysis
 
@@ -45,6 +56,16 @@ augroup ActivityLog
 	au BufWritePost * call s:LogAction('write')
 augroup END
 
+
+" Section: Line log setup
+" Log create, interval/break, continue, end task
+"" sets ,ls mapping to log current line as start of task in .log files
+"" sets ,le mapping to log current line as end of task in .log files
+nmap <silent> <Leader>ls :call TimeLogLine('start_task')<CR>
+nmap <silent> <Leader>le :call TimeLogLine('end_task')<CR>
+nmap <silent> <Leader>li :call TimeLogLine('interval_task')<CR>
+nmap <silent> <Leader>lc :call TimeLogLine('continue_task')<CR>
+
 " Section: Script variables
 
 " Where to store activity. setting to '' disables the log, effectively
@@ -56,6 +77,8 @@ endif
 if !exists('g:activity_log_append_git_branch')
 	let g:activity_log_append_git_branch = 1
 endif
+
+
 " stack of unsaved log entries. Used to log open and create entries for
 " delayed inserting into the log upon write
 let s:UnsavedStack = {}
@@ -118,6 +141,29 @@ function s:WriteLogAction(message)
 	:silent exe '! mkdir -p ' substitute(l:path, '\/[^\/]*$', '', '')
 	:silent exe '! echo ' . shellescape(a:message) . ' >> ' . l:path
 endfunction
+
+
+
+function TimeLogLine(action)
+    let l:file = expand("%:p")
+	let l:time = strftime('%F %T')
+    let l:task = getline('.')
+    let l:task = substitute(l:task,"  ","","g") 
+    let l:branch = ''
+
+    if g:activity_log_append_git_branch
+		let l:branch = system('cd ' . expand("%:h") . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
+		if (l:branch =~ "^* ")
+			let l:branch = substitute(l:branch, '\* ', '', '')
+            let l:branch = substitute(l:branch, '\n', '', '')
+		endif
+	endif
+
+
+    let l:message = l:time . ';' . a:action  . ';' . l:file . ';'. l:branch .';' . l:task
+    call s:WriteLogAction(l:message)
+endfunction
+
 
 " Section: Plugin completion
 let g:loaded_activity_log=2
