@@ -1,4 +1,4 @@
-Vim Activity Log
+Vim Activity Log ![Project status](http://stillmaintained.com/AD7six/vim-activity-log.png?20120106)
 =========================
 
 This vim plugin is used to keep track of what and when you do things.
