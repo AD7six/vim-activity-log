@@ -13,7 +13,7 @@
 "
 " Section: Documentation
 "
-" The vim activity log plugin logs when you create, open or write a file. 
+" The vim activity log plugin logs when you create, open or write a file.
 "
 " This provides you with a detailed log of what you've been up to. By default
 " the activity log files are stored in the ~/activity/ directory and are named
@@ -124,10 +124,8 @@ function s:LogAction(action)
 	let l:message = l:time . ';' . a:action  . ';' . l:file
 
 	if g:activity_log_append_git_branch
-		let l:branch = system('cd ' . fnameescape(expand("%:h")) . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
-		if (l:branch =~ "^* ")
-			let l:message = l:message . ';' . substitute(l:branch, '\* ', '', '')
-		endif
+		let l:branch = system('cd ' . fnameescape(expand("%:h")) . "; git rev-parse -q --abbrev-ref HEAD 2> /dev/null")
+		let l:message = l:message . ';' . substitute(l:branch, '\v\C\n$', '', '')
 	endif
 	call s:WriteLogAction(l:message)
 endfunction
