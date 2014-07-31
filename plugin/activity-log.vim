@@ -75,11 +75,11 @@ if !exists('g:activity_log_location')
 endif
 " append the current git branch to log?
 if !exists('g:activity_log_append_git_branch')
-   if !executable("git")
-      let g:activity_log_append_git_branch = 0
-   else
-      let g:activity_log_append_git_branch = 1
-   endif
+	if !executable("git")
+		let g:activity_log_append_git_branch = 0
+	else
+		let g:activity_log_append_git_branch = 1
+	endif
 endif
 
 
@@ -141,42 +141,42 @@ endfunction
 function s:WriteLogAction(message)
 	let l:path = expand(strftime(g:activity_log_location))
 	" :silent exe '! mkdir -p ' substitute(l:path, '\/[^\/]*$', '', '')
-   let l:dir = fnamemodify(l:path, ":p:h")
-   if finddir(l:dir) == ""
-      call mkdir(l:dir, "p")
-   endif
+	let l:dir = fnamemodify(l:path, ":p:h")
+	if finddir(l:dir) == ""
+		call mkdir(l:dir, "p")
+	endif
    
 	" :silent exe '! echo ' . shellescape(a:message) . ' >> ' . l:path
-  if filereadable(l:path)
-    let l:lines = readfile(l:path)
-  else
-    let l:lines = []
-  endif
-  if writefile(l:lines+[a:message], l:path) != 0
-     echo "activity-log: failed to write to logfile"
-  endif
+	if filereadable(l:path)
+		let l:lines = readfile(l:path)
+	else
+		let l:lines = []
+	endif
+	if writefile(l:lines+[a:message], l:path) != 0
+		echo "activity-log: failed to write to logfile"
+	endif
 endfunction
 
 
 
 function TimeLogLine(action)
-    let l:file = expand("%:p")
-    let l:time = strftime('%Y-%m-%d %H:%M:%S')
-    let l:task = getline('.')
-    let l:task = substitute(l:task,"  ","","g") 
-    let l:branch = ''
+	let l:file = expand("%:p")
+	let l:time = strftime('%Y-%m-%d %H:%M:%S')
+	let l:task = getline('.')
+	let l:task = substitute(l:task,"  ","","g") 
+	let l:branch = ''
 
-    if g:activity_log_append_git_branch
+	if g:activity_log_append_git_branch
 		let l:branch = system('cd ' . expand("%:h") . "; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d'")
 		if (l:branch =~ "^* ")
 			let l:branch = substitute(l:branch, '\* ', '', '')
-            let l:branch = substitute(l:branch, '\n', '', '')
+			let l:branch = substitute(l:branch, '\n', '', '')
 		endif
 	endif
 
 
-    let l:message = l:time . ';' . a:action  . ';' . l:file . ';'. l:branch .';' . l:task
-    call s:WriteLogAction(l:message)
+	let l:message = l:time . ';' . a:action  . ';' . l:file . ';'. l:branch .';' . l:task
+	call s:WriteLogAction(l:message)
 endfunction
 
 
