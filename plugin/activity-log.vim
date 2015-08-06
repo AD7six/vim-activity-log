@@ -116,21 +116,25 @@ function s:LogAction(action)
 		let s:UnsavedStack[l:file][a:action] = l:time
 		return
 	endif
-
+    let l:branch = ""
+    if g:activity_log_append_git_branch
+		let l:branch = system('cd ' . fnameescape(expand("%:h")) . "; git rev-parse -q --abbrev-ref HEAD 2> /dev/null")
+    endif
 	if len(s:UnsavedStack) && has_key(s:UnsavedStack, l:file)
 		for [key, value] in items(s:UnsavedStack[l:file])
 			let l:message = value . ';' . key  . ';' . l:file
+            if g:activity_log_append_git_branch
+                let l:message = l:message . ';' . substitute(l:branch, '\v\C\n$', '', '')
+            endif
 			call s:WriteLogAction(l:message)
 		endfor
 		let s:UnsavedStack[l:file] = {}
 	endif
 
 	let l:message = l:time . ';' . a:action  . ';' . l:file
-
-	if g:activity_log_append_git_branch
-		let l:branch = system('cd ' . fnameescape(expand("%:h")) . "; git rev-parse -q --abbrev-ref HEAD 2> /dev/null")
-		let l:message = l:message . ';' . substitute(l:branch, '\v\C\n$', '', '')
-	endif
+    if g:activity_log_append_git_branch
+        let l:message = l:message . ';' . substitute(l:branch, '\v\C\n$', '', '')
+    endif
 	call s:WriteLogAction(l:message)
 endfunction
 
