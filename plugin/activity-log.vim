@@ -119,7 +119,7 @@ function s:LogAction(action)
 
 	if len(s:UnsavedStack) && has_key(s:UnsavedStack, l:file)
 		for [key, value] in items(s:UnsavedStack[l:file])
-			let l:message = value . ' ' . key  . ' ' . l:file
+			let l:message = value . ';' . key  . ';' . l:file
 			call s:WriteLogAction(l:message)
 		endfor
 		let s:UnsavedStack[l:file] = {}
