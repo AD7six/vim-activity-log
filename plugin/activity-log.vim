@@ -107,6 +107,10 @@ function s:LogAction(action)
 	if empty(l:file)
 		return
 	endif
+
+    if !empty(matchstr(l:file, ';'))
+        let l:file = '"' . l:file . '"'
+    endif
 	let l:time = strftime('%Y-%m-%d %H:%M:%S')
 
 	if a:action != "write"
