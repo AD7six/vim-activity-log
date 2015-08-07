@@ -123,12 +123,16 @@ function s:LogAction(action)
     let l:branch = ""
     if g:activity_log_append_git_branch
 		let l:branch = system('cd ' . fnameescape(expand("%:h")) . "; git rev-parse -q --abbrev-ref HEAD 2> /dev/null")
+        let l:branch = fnameescape(substitute(l:branch, '\v\C\n$', '', ''))
+        if !empty(matchstr(l:branch, ';'))
+            let l:branch = '"' . l:branch . '"'
+        endif
     endif
 	if len(s:UnsavedStack) && has_key(s:UnsavedStack, l:file)
 		for [key, value] in items(s:UnsavedStack[l:file])
 			let l:message = value . ';' . key  . ';' . l:file
             if g:activity_log_append_git_branch
-                let l:message = l:message . ';' . substitute(l:branch, '\v\C\n$', '', '')
+                let l:message = l:message . ';' . l:branch
             endif
 			call s:WriteLogAction(l:message)
 		endfor
@@ -137,7 +141,7 @@ function s:LogAction(action)
 
 	let l:message = l:time . ';' . a:action  . ';' . l:file
     if g:activity_log_append_git_branch
-        let l:message = l:message . ';' . substitute(l:branch, '\v\C\n$', '', '')
+        let l:message = l:message . ';' . l:branch
     endif
 	call s:WriteLogAction(l:message)
 endfunction
