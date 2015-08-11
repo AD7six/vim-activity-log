@@ -108,6 +108,11 @@ function s:LogAction(action)
 		return
 	endif
 
+    let l:file_type = &filetype
+    if empty(l:file_type)
+        let l:file_type = "unknown"
+    endif
+
     if !empty(matchstr(l:file, ';'))
         let l:file = '"' . l:file . '"'
     endif
@@ -130,7 +135,7 @@ function s:LogAction(action)
     endif
 	if len(s:UnsavedStack) && has_key(s:UnsavedStack, l:file)
 		for [key, value] in items(s:UnsavedStack[l:file])
-			let l:message = value . ';' . key  . ';' . l:file
+			let l:message = value . ';' . key  . ';' . l:file . ';' . l:file_type
             if g:activity_log_append_git_branch
                 let l:message = l:message . ';' . l:branch
             endif
@@ -139,7 +144,7 @@ function s:LogAction(action)
 		let s:UnsavedStack[l:file] = {}
 	endif
 
-	let l:message = l:time . ';' . a:action  . ';' . l:file
+	let l:message = l:time . ';' . a:action  . ';' . l:file . ';' . l:file_type 
     if g:activity_log_append_git_branch
         let l:message = l:message . ';' . l:branch
     endif
