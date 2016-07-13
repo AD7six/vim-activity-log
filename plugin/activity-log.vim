@@ -110,7 +110,7 @@ function s:LogAction(action)
 
     let l:file_type = &filetype
     if empty(l:file_type)
-        let l:file_type = "unknown"
+        let l:file_type = "text"
     endif
 
     if !empty(matchstr(l:file, ';'))
