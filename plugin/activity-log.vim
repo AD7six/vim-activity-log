@@ -61,10 +61,12 @@ augroup END
 " Log create, interval/break, continue, end task
 "" sets ,ls mapping to log current line as start of task in .log files
 "" sets ,le mapping to log current line as end of task in .log files
-nmap <silent> <Leader>ls :call TimeLogLine('start_task')<CR>
-nmap <silent> <Leader>le :call TimeLogLine('end_task')<CR>
-nmap <silent> <Leader>li :call TimeLogLine('interval_task')<CR>
-nmap <silent> <Leader>lc :call TimeLogLine('continue_task')<CR>
+if get(g:, 'activity_log#default_keymap', 0)
+	nmap <silent> <Leader>ls :call TimeLogLine('start_task')<CR>
+	nmap <silent> <Leader>le :call TimeLogLine('end_task')<CR>
+	nmap <silent> <Leader>li :call TimeLogLine('interval_task')<CR>
+	nmap <silent> <Leader>lc :call TimeLogLine('continue_task')<CR>
+endif
 
 " Section: Script variables
 
